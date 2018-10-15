@@ -1,0 +1,1 @@
+This is the repository that contains all the materials for the machine learning class at Houghton college when I have taken the class.
