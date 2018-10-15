@@ -1,0 +1,12 @@
+Neural Network Analysis
+-----------------------
+
+When adding more neurons to the network while classifying on a
+dataset, a neural network with more hidden layers will have a
+lower loss rate, indicating that it has more "power." This
+further indicates that a neural network with more hidden neurons
+will be able to classify more data in a dataset.
+
+For reference, the dataset used was the titanic dataset...particularily
+the gender and class columns. This data was analyzed for classification
+of gender by the passenger class.
