@@ -63,3 +63,9 @@ register.set_qubit(1, 1/np.sqrt(3), np.sqrt(2./3.))
 print(register)
 
 register.plot()
+def avg(values):
+    return sum(values)/float(len(values))
+average = avg([register.measure() < 4 for i in range (10000)])
+#print average
+print "Measure average"
+print np.sqrt(average*2-1)

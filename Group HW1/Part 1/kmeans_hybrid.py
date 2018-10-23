@@ -1,4 +1,5 @@
-from linear_algebra import squared_distance, vector_mean, distance
+from linear_algebra_hybrid import squared_distance, vector_mean, distance
+from quantum_dot_product_test import dot, distance
 import math, random
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -34,8 +35,11 @@ class KMeans:
             for i in range(self.k):
                 i_points = [p for p, a in zip(inputs, assignments) if a == i]
                 # avoid divide-by-zero if i_points is empty
+                #this is where the centroids are and need to
+                #be normalized for quantum states..
                 if i_points:
                     self.means[i] = vector_mean(i_points)
+
 
 def squared_clustering_errors(inputs, k):
     """finds the total squared error from k-means clustering the inputs"""
@@ -170,15 +174,9 @@ if __name__ == "__main__":
 
     random.seed(0) # so you get the same results as me
     #clusterer = KMeans(3)
-    clusterer = KMeans(2)
+    clusters = 2
+    clusterer = KMeans(clusters)
     clusterer.train(inputs)
-    print("2-means:")
-    print(clusterer.means)
-    print()
-
-    random.seed(0)
-    clusterer = KMeans(2)
-    clusterer.train(inputs)
-    print("2-means:")
+    print("{0}-means". format(clusters))
     print(clusterer.means)
     print()
