@@ -2,6 +2,7 @@
 
 # import math lib
 from math import pi
+import math
 
 # import Qiskit
 from qiskit import Aer, IBMQ, execute
@@ -23,6 +24,7 @@ cr = ClassicalRegister(5, name="cr")
 # and your Classical Register "cr"
 qc = QuantumCircuit(qr, cr, name="k_means")
     
+result_values = []
 #Define a loop to compute the distance between each pair of points
 for i in range(9):
     for j in range(1,10-i):
@@ -43,9 +45,12 @@ for i in range(9):
             
         job = execute(qc, backend=backend, shots=1024)
         result = job.result()
-        print(result)
-        print('theta_1:' + str(theta_1))
-        print('theta_2:' + str(theta_2))
-        print(result.get_counts())
+        #print(result)
+        #print('theta_1:' + str(theta_1))
+        #print('theta_2:' + str(theta_2))
+        #print(result.get_counts())
+        result_values = [theta_1, theta_2]
+        for r in result_values:
+                print("{0}, {1}".format(math.sin(r), math.cos(r)))
         #print(result.get_data(qc))
         #plot_histogram(result.get_counts())
