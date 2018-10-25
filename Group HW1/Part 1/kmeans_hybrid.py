@@ -62,31 +62,6 @@ def plot_squared_clustering_errors():
     plt.ylabel("total squared error")
     plt.show()
 
-#
-# using clustering to recolor an image
-#
-
-def recolor_image(input_file, k=5):
-
-    img = mpimg.imread(path_to_png_file)
-    pixels = [pixel for row in img for pixel in row]
-    clusterer = KMeans(k)
-    clusterer.train(pixels) # this might take a while
-
-    def recolor(pixel):
-        cluster = clusterer.classify(pixel) # index of the closest cluster
-        return clusterer.means[cluster]     # mean of the closest cluster
-
-    new_img = [[recolor(pixel) for pixel in row]
-               for row in img]
-
-    plt.imshow(new_img)
-    plt.axis('off')
-    plt.show()
-
-#
-# hierarchical clustering
-#
 
 def is_leaf(cluster):
     """a cluster is a leaf if it has length 1"""
