@@ -68,31 +68,46 @@ with tf.Session() as sess:
             maxQ2 = np.max(Q2)
             targetQ1 = allQ1
             targetQ2 = allQ2
-            print("Targets:")
-            print(str(targetQ1))
-            print(str(targetQ2))
-            print("A:")
-            print(str(a[0]))
-            print("Maxs:")
-            print(str(maxQ1))
-            print(str(maxQ2))
-            print("TQ0:")
-            print(targetQ1[0])
+            #print("Targets:")
+            #print(str(targetQ1))
+            #print(str(targetQ2))
+            #print("A:")
+            #print(str(a[0]))
+            #print("Maxs:")
+            #print(str(maxQ1))
+            #print(str(maxQ2))
+            #print("TQ0:")
+            #print(targetQ1[0])
             
             targetQ1[0][0][a[0]] = r + y*(maxQ2)
             targetQ2[0][0][a[0]] = r + y*(maxQ1)
+            #print("TargetQs:")
+            #print(targetQ1)
+            #print(targetQ2)
             #Train our network using target and predicted Q values
             x = np.random.rand()
             if x > 0.5:
-                _,W1 = sess.run([updateModel1,W1],feed_dict={inputs1:np.identity(16)[s:s+1],inputs2:np.identity(16)[s:s+1],nextQ1:targetQ1})
+                #print("update_w1")
+                #print(targetQ1[0])
+                _,W1_a = sess.run([updateModel1,W1],feed_dict={inputs1:list(np.identity(16)[s:s+1]),inputs2:list(np.identity(16)[s:s+1]),nextQ1:list(targetQ1[0])})
+                tf.assign_add(W1, W1_a)
+                #W1 = W1_a
             else:
-                _,W2 = sess.run([updateModel2,W2],feed_dict={inputs1:np.identity(16)[s:s+1],inputs2:np.identity(16)[s:s+1],nextQ2:targetQ2})
+                #print("update_w2")
+                #print(targetQ2[0])
+                _,W2_a = sess.run([updateModel2,W2],feed_dict={inputs1:list(np.identity(16)[s:s+1]),inputs2:list(np.identity(16)[s:s+1]),nextQ2:list(targetQ2[0])})
+                tf.assign_add(W2, W2_a)
+                #W2 = W2_a
+            #print("done.")
             rAll += r
             s = s1
             if d == True:
                 #Reduce chance of random action as we train the model.
+                #print("e calc")
                 e = 1./((i/50) + 10)
                 break
         jList.append(j)
         rList.append(rAll)
+        if (i % 100 == 0):
+            print("{0}%".format((i/num_episodes)*100))
 print("Percent of succesful episodes: " + str(sum(rList)/num_episodes) + "%")
