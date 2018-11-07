@@ -1,6 +1,7 @@
 import gym
 from gym import wrappers
 import numpy as np
+import frozen_lake
 
 env = gym.make("FrozenLake-v0")
 #env = wrappers.Monitor(env, "./results", force=True)
@@ -13,8 +14,8 @@ Q_5 = np.zeros([env.observation_space.n, env.action_space.n])
 QS = [Q_1, Q_2, Q_3, Q_4, Q_5]
 num_episodes = 20000
 rList = []
-gamma = 0.99
-alpha = 0.85
+gamma = 0.90
+alpha = 0.90
 
 for i in range(num_episodes):
     state = env.reset()
