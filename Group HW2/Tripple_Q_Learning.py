@@ -2,6 +2,7 @@ import gym
 from gym import wrappers
 import numpy as np
 import frozen_lake
+import core
 
 env = gym.make("FrozenLake-v0")
 #env = wrappers.Monitor(env, "./results", force=True)
