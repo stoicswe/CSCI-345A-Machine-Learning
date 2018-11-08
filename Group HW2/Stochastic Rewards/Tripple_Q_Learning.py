@@ -17,7 +17,7 @@ QS = [Q_1, Q_2, Q_3]
 num_episodes = 20000
 rList = []
 gamma = 0.95
-alpha = 0.8
+alpha = 0.99
 
 for i in range(num_episodes):
     state = env.reset()
@@ -40,5 +40,5 @@ for i in range(num_episodes):
     rList.append(rAll)
     if i % 500 == 0 and i is not 0:
         print("Success rate: " + str(sum(rList) / i))
-
-print("Success rate: " + str(sum(rList)/num_episodes))
+print("Tripple Q Learning")
+print("Final Success rate: " + str(sum(rList)/num_episodes))

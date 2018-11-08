@@ -17,7 +17,7 @@ QS = [Q_1, Q_2, Q_3, Q_4]
 num_episodes = 20000
 rList = []
 gamma = 0.95
-alpha = 0.8
+alpha = 0.99
 
 for i in range(num_episodes):
     state = env.reset()
@@ -34,13 +34,13 @@ for i in range(num_episodes):
         elif x > 0.50:
             Q_2[state, action] = Q_2[state, action] + alpha * (reward + gamma * ((QS[0] + QS[2] + QS[3]) / (len(QS) - 1))[new_state, np.argmax(Q_2[new_state, :])] - Q_2[state, action])
         elif x > 0.25:
-            Q_3[state, action] = Q_2[state, action] + alpha * (reward + gamma * ((QS[0] + QS[1] + QS[3]) / (len(QS) - 1))[new_state, np.argmax(Q_3[new_state, :])] - Q_3[state, action])
+            Q_3[state, action] = Q_3[state, action] + alpha * (reward + gamma * ((QS[0] + QS[1] + QS[3]) / (len(QS) - 1))[new_state, np.argmax(Q_3[new_state, :])] - Q_3[state, action])
         else:
-            Q_4[state, action] = Q_3[state, action] + alpha * (reward + gamma * ((QS[0] + QS[1] + QS[2]) / (len(QS) - 1))[new_state, np.argmax(Q_4[new_state, :])] - Q_4[state, action])
+            Q_4[state, action] = Q_4[state, action] + alpha * (reward + gamma * ((QS[0] + QS[1] + QS[2]) / (len(QS) - 1))[new_state, np.argmax(Q_4[new_state, :])] - Q_4[state, action])
         rAll += reward
         state = new_state
     rList.append(rAll)
     if i % 500 == 0 and i is not 0:
         print("Success rate: " + str(sum(rList) / i))
-
-print("Success rate: " + str(sum(rList)/num_episodes))
+print("Quadruple Q Learning")
+print("Final Success rate: " + str(sum(rList)/num_episodes))
