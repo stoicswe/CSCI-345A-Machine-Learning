@@ -137,7 +137,7 @@ def evolutionAverageFitness(historic, password, size_population):
 
 #variables
 #password = "banana"
-password = "dick's sporting goods"
+password = ""
 # ORIGINAL VALUES:
 size_population = 100
 best_sample = 20
