@@ -3,12 +3,6 @@ import random
 import operator
 import copy
 
-target = 45
-solutions = 20
-parts = 4
-p = 0.1
-iterations = 1000
-
 def rand_bin_str(length):
     ''' This is a helper function for the
         generate function.
@@ -37,15 +31,17 @@ def mutate(gene, p):
         (p) of a mutation.
     '''
     for strg in range(len(gene)):
+        c = 0
         gAcc = list(gene[strg])
         for g in range(len(gAcc)):
             if random.uniform(0, 1) < p:
+                c += 1
                 if gAcc[g] == '0':
                     gAcc[g] = '1'
                 else:
                     gAcc[g] = '0'
         gene[strg] = ''.join(gAcc)
-    return gene
+    return gene, c
             
 
 def cross_over(gene1, gene2):
@@ -86,9 +82,17 @@ def fit(y, xs):
         i+=1
     return scores
 
+target = random.randint(0, 60)
+solutions = 20
+parts = 4
+p = 0.1
+iterations = 1000
+
 # Generate the first generation
 gen1 = generate(parts, solutions)
 cgen = copy.deepcopy(gen1)
+mutation_count = 0
+crossOver_count = 0
 
 # begin iterating through generations
 for i in range(iterations):
@@ -108,7 +112,8 @@ for i in range(iterations):
     cgen = top_ten
     children = copy.deepcopy(top_ten)
     for j in range(len(children)):
-        children[j] = mutate(children[j], p)
+        children[j], c = mutate(children[j], p)
+        mutation_count += c
     for j in range(0, 10):
         gi1 = 0
         gi2 = 0
@@ -117,6 +122,23 @@ for i in range(iterations):
         g1, g2 = cross_over(children[gi1], children[gi2])
         children[gi1] = g1
         children[gi2] = g2
+        crossOver_count += 1
     for j in range(len(children)):
-        children[j] = mutate(children[j], p)
+        children[j], c = mutate(children[j], p)
+        mutation_count += c
     cgen += children
+
+print()
+print()
+print("Target Vaue:")
+print(target)
+print("Generations:")
+print(iterations)
+print("Mutations:")
+print(mutation_count)
+print("Cross Overs:")
+print(crossOver_count)
+print("Results:")
+fit(target, cgen)
+print("...")
+print()
