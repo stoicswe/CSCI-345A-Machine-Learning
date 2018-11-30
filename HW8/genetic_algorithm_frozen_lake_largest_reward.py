@@ -56,7 +56,7 @@ def crossOverChildren(children, count):
     return children, c
 
 def fitPolicy(policy):
-    num_episodes = 100
+    num_episodes = 500
     jList = []
     rList = []
     for i in range(num_episodes):
@@ -79,18 +79,27 @@ def fitPolicy(policy):
 
 def fitChildren(children, output = False, greedy = True):
     scores = []
+    rewards = []
+    steps = []
     if output:
         print('Policy:' + ' '*50 + 'Reward:' + ' '*8 + 'Steps:')
     for g in range(len(children)):
         s1, s2 = fitPolicy(children[g])
+        rewards.append(s1)
+        steps.append(s2)
         if output:
             print(str(children[g]) + ' '*10 + str(s1) + ' '*10 + str(s2))
         scores.append((g, s1, s2))
     if greedy:
         scores.sort(key=operator.itemgetter(1))
+        top_ten_index = scores[10:]
     else:
         scores.sort(key=operator.itemgetter(2))
-    top_ten_index = scores[10:]
+        top_ten_index = scores[:10]
+    if output:
+        print('-'*80)
+        print('Average:' + ' '*50 + str(round(np.mean(rewards), 3)) + ' '*10 + str(round(np.mean(steps), 3)))
+        print('-'*80)
     top_ten = [children[index[0]] for index in top_ten_index]
     return top_ten
 
@@ -98,7 +107,7 @@ solutions = 20
 parts = 16
 actions = 4
 mutation_factor = 0.1
-iterations = 100
+iterations = 1000
 
 gen1 = generate(solutions, parts, actions)
 cgen = copy.deepcopy(gen1)
