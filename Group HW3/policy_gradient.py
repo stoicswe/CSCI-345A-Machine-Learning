@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import tensorflow as tf
 import collections
+from frozen_lake import FrozenLakeEnv
 
 if "../" not in sys.path:
   sys.path.append("../") 
@@ -14,14 +15,15 @@ from lib import plotting
 matplotlib.style.use('ggplot')
 
 #env = CliffWalkingEnv()
-env = gym.make('FrozenLake-v0')
+#env = gym.make('FrozenLake-v0')
+env = FrozenLakeEnv(is_slippery=False)
 
 class PolicyEstimator():
     """
     Policy Function approximator. 
     """
     
-    def __init__(self, learning_rate=0.01, scope="policy_estimator"):
+    def __init__(self, learning_rate=0.001, scope="policy_estimator"):
         with tf.variable_scope(scope):
             self.state = tf.placeholder(tf.int32, [], "state")
             self.action = tf.placeholder(dtype=tf.int32, name="action")
@@ -60,7 +62,7 @@ class ValueEstimator():
     Value Function approximator. 
     """
     
-    def __init__(self, learning_rate=0.1, scope="value_estimator"):
+    def __init__(self, learning_rate=0.01, scope="value_estimator"):
         with tf.variable_scope(scope):
             self.state = tf.placeholder(tf.int32, [], "state")
             self.target = tf.placeholder(dtype=tf.float32, name="target")
@@ -126,7 +128,7 @@ def reinforce(env, estimator_policy, estimator_value, num_episodes, discount_fac
             action_probs = estimator_policy.predict(state)
             action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
             next_state, reward, done, _ = env.step(action)
-            
+            #reward = reward*2
             # Keep track of the transition
             episode.append(Transition(
               state=state, action=action, reward=reward, next_state=next_state, done=done))
@@ -169,6 +171,6 @@ with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     # Note, due to randomness in the policy the number of episodes you need to learn a good
     # policy may vary. ~2000-5000 seemed to work well for me.
-    stats = reinforce(env, policy_estimator, value_estimator, 2000, discount_factor=1.0)
+    stats = reinforce(env, policy_estimator, value_estimator, 10000, discount_factor=0.7)
 
 plotting.plot_episode_stats(stats, smoothing_window=25)

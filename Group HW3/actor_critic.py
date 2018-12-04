@@ -6,6 +6,7 @@ import sys
 import tensorflow as tf
 import collections
 import gym
+from frozen_lake import FrozenLakeEnv
 
 if "../" not in sys.path:
   sys.path.append("../") 
@@ -13,15 +14,16 @@ from lib.envs.cliff_walking import CliffWalkingEnv
 from lib import plotting
 
 matplotlib.style.use('ggplot')
-env = CliffWalkingEnv()
+#env = CliffWalkingEnv()
 #env = gym.make('FrozenLake-v0')
+env = FrozenLakeEnv(is_slippery=False)
 
 class PolicyEstimator():
     """
     Policy Function approximator. 
     """
     
-    def __init__(self, learning_rate=0.01, scope="policy_estimator"):
+    def __init__(self, learning_rate=0.001, scope="policy_estimator"):
         with tf.variable_scope(scope):
             self.state = tf.placeholder(tf.int32, [], "state")
             self.action = tf.placeholder(dtype=tf.int32, name="action")
@@ -60,7 +62,7 @@ class ValueEstimator():
     Value Function approximator. 
     """
     
-    def __init__(self, learning_rate=0.1, scope="value_estimator"):
+    def __init__(self, learning_rate=0.01, scope="value_estimator"):
         with tf.variable_scope(scope):
             self.state = tf.placeholder(tf.int32, [], "state")
             self.target = tf.placeholder(dtype=tf.float32, name="target")
@@ -168,6 +170,6 @@ with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     # Note, due to randomness in the policy the number of episodes you need to learn a good
     # policy may vary. ~300 seemed to work well for me.
-    stats = actor_critic(env, policy_estimator, value_estimator, 300)
+    stats = actor_critic(env, policy_estimator, value_estimator, 3000)
 
 plotting.plot_episode_stats(stats, smoothing_window=10)
