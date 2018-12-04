@@ -13,7 +13,8 @@ from lib import plotting
 
 matplotlib.style.use('ggplot')
 
-env = CliffWalkingEnv()
+#env = CliffWalkingEnv()
+env = gym.make('FrozenLake-v0')
 
 class PolicyEstimator():
     """

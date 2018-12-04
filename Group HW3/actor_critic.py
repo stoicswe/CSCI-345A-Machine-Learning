@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import tensorflow as tf
 import collections
+import gym
 
 if "../" not in sys.path:
   sys.path.append("../") 
@@ -12,9 +13,8 @@ from lib.envs.cliff_walking import CliffWalkingEnv
 from lib import plotting
 
 matplotlib.style.use('ggplot')
-
-
 env = CliffWalkingEnv()
+#env = gym.make('FrozenLake-v0')
 
 class PolicyEstimator():
     """
@@ -90,15 +90,15 @@ class ValueEstimator():
         _, loss = sess.run([self.train_op, self.loss], feed_dict)
         return loss
 
-def reinforce(env, estimator_policy, estimator_value, num_episodes, discount_factor=1.0):
+def actor_critic(env, estimator_policy, estimator_value, num_episodes, discount_factor=1.0):
     """
-    REINFORCE (Monte Carlo Policy Gradient) Algorithm. Optimizes the policy
+    Actor Critic Algorithm. Optimizes the policy 
     function approximator using policy gradient.
     
     Args:
         env: OpenAI environment.
         estimator_policy: Policy Function to be optimized 
-        estimator_value: Value function approximator, used as a baseline
+        estimator_value: Value function approximator, used as a critic
         num_episodes: Number of episodes to run for
         discount_factor: Time-discount factor
     
@@ -135,27 +135,26 @@ def reinforce(env, estimator_policy, estimator_value, num_episodes, discount_fac
             stats.episode_rewards[i_episode] += reward
             stats.episode_lengths[i_episode] = t
             
+            # Calculate TD Target
+            value_next = estimator_value.predict(next_state)
+            td_target = reward + discount_factor * value_next
+            td_error = td_target - estimator_value.predict(state)
+            
+            # Update the value estimator
+            estimator_value.update(state, td_target)
+            
+            # Update the policy estimator
+            # using the td error as our advantage estimate
+            estimator_policy.update(state, td_error, action)
+            
             # Print out which step we're on, useful for debugging.
             print("\rStep {} @ Episode {}/{} ({})".format(
                     t, i_episode + 1, num_episodes, stats.episode_rewards[i_episode - 1]), end="")
-            # sys.stdout.flush()
 
             if done:
                 break
                 
             state = next_state
-    
-        # Go through the episode and make policy updates
-        for t, transition in enumerate(episode):
-            # The return after this timestep
-            total_return = sum(discount_factor**i * t.reward for i, t in enumerate(episode[t:]))
-            # Calculate baseline/advantage
-            baseline_value = estimator_value.predict(transition.state)            
-            advantage = total_return - baseline_value
-            # Update our value estimator
-            estimator_value.update(transition.state, total_return)
-            # Update our policy estimator
-            estimator_policy.update(transition.state, advantage, transition.action)
     
     return stats
 
@@ -168,7 +167,7 @@ value_estimator = ValueEstimator()
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     # Note, due to randomness in the policy the number of episodes you need to learn a good
-    # policy may vary. ~2000-5000 seemed to work well for me.
-    stats = reinforce(env, policy_estimator, value_estimator, 2000, discount_factor=1.0)
+    # policy may vary. ~300 seemed to work well for me.
+    stats = actor_critic(env, policy_estimator, value_estimator, 300)
 
-plotting.plot_episode_stats(stats, smoothing_window=25)
+plotting.plot_episode_stats(stats, smoothing_window=10)
